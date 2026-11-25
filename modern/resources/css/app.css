@@ -1,0 +1,1353 @@
+:root {
+    --agtech-ink: #142b20;
+    --agtech-green: #176444;
+    --agtech-paper: #fff;
+    --agtech-surface: #fff;
+    --agtech-button-text: #fff;
+    --agtech-button-hover: #105137;
+    --agtech-highlight: #eaf3e6;
+    --agtech-highlight-hover: #deedda;
+    --agtech-header: #10261a;
+    --agtech-control-border: #aebeb0;
+    --agtech-field-error: #9f3030;
+    --agtech-muted: #4c5e50;
+    --agtech-border: #dce4d9;
+    --agtech-soft: #f3f7f2;
+    --agtech-body-font: 'DM Sans Variable', system-ui, sans-serif;
+    --agtech-heading-font: 'Manrope Variable', system-ui, sans-serif;
+}
+
+:root[data-bs-theme="dark"] {
+    --agtech-ink: #eff8f1;
+    --agtech-green: #8ee4af;
+    --agtech-paper: #101915;
+    --agtech-surface: #17221c;
+    --agtech-button-text: #102519;
+    --agtech-button-hover: #b2efc8;
+    --agtech-highlight: #20372a;
+    --agtech-highlight-hover: #294635;
+    --agtech-muted: #acbeb2;
+    --agtech-border: #33463a;
+    --agtech-soft: #141f19;
+    --agtech-control-border: #566b5d;
+    --agtech-field-error: #ffb5ac;
+}
+
+body {
+    color: var(--agtech-ink);
+    background: var(--agtech-paper);
+    font-family: var(--agtech-body-font);
+}
+
+.container {
+    --bs-gutter-x: clamp(1.5rem, 5vw, 3rem);
+}
+
+.site-nav {
+    padding-block: .55rem;
+    background: var(--agtech-paper);
+    border-bottom: 1px solid var(--agtech-border);
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    color: inherit;
+    font-family: var(--agtech-heading-font);
+    font-size: 1.45rem;
+    font-weight: 780;
+    letter-spacing: -.035em;
+    text-decoration: none;
+}
+
+.site-nav .navbar-brand {
+    padding-block: 0;
+}
+
+.site-nav .navbar-toggler {
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.site-nav .nav-link {
+    color: var(--agtech-ink);
+    font-weight: 620;
+}
+
+.site-nav .nav-link:hover,
+.site-nav [aria-current="page"] {
+    color: var(--agtech-green);
+    text-decoration: underline;
+    text-decoration-color: var(--agtech-green);
+    text-underline-offset: .4em;
+}
+
+.site-nav .dropdown-menu {
+    border-color: var(--agtech-border);
+    border-radius: .85rem;
+    padding: .35rem;
+}
+
+@media (min-width: 992px) {
+    .company-menu .dropdown-menu {
+        top: 100%;
+        left: 0;
+        margin-top: 0;
+    }
+}
+
+.site-nav .dropdown-item {
+    border-radius: .55rem;
+}
+
+.site-nav .dropdown-item:active {
+    background: var(--agtech-green);
+    color: var(--agtech-button-text);
+}
+
+.site-nav .site-login, .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.5rem;
+    border-radius: .55rem;
+}
+
+.site-nav .site-login {
+    padding: 0 1.1rem;
+    border: 1px solid var(--agtech-green);
+    color: var(--agtech-green);
+    text-decoration: none;
+}
+
+.site-nav .site-login:hover {
+    background: var(--agtech-highlight);
+}
+
+.theme-toggle {
+    width: 2.5rem;
+    padding: 0;
+    border: 1px solid var(--agtech-border);
+    background: transparent;
+    color: var(--agtech-ink);
+}
+
+.theme-toggle:hover,
+.theme-toggle[aria-pressed="true"] {
+    color: var(--agtech-green);
+}
+
+@media (max-width: 991px) {
+    .site-nav .site-login,
+    .theme-toggle {
+        height: 2.75rem;
+        margin-block: .4rem;
+    }
+
+    .theme-toggle {
+        width: 2.75rem;
+    }
+}
+
+h1, h2, h3 {
+    font-family: var(--agtech-heading-font);
+    font-weight: 780;
+    letter-spacing: -.045em;
+    line-height: 1.08;
+}
+
+h1 {
+    margin-bottom: 1.1rem;
+    font-size: clamp(2.25rem, 4.9vw, 4.25rem);
+}
+
+p {
+    line-height: 1.65;
+}
+
+a {
+    color: var(--agtech-green);
+}
+
+.hero {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    align-items: center;
+    min-height: clamp(34rem, 54vw, 45rem);
+    padding-block: clamp(3rem, 8vw, 7rem);
+    overflow: hidden;
+    background: var(--agtech-header);
+    color: white;
+}
+
+.hero-photo {
+    position: absolute;
+    z-index: -2;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 62% center;
+}
+
+.hero::after {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: linear-gradient(90deg, #10261a 0%, #10261aed 21%, #10261a75 52%, #10261a16 100%);
+    content: '';
+}
+
+.hero h1 {
+    max-width: 12ch;
+    font-size: clamp(2.75rem, 6vw, 5.75rem);
+    text-wrap: balance;
+}
+
+.hero-content p {
+    max-width: 31rem;
+    margin-bottom: 1.5rem;
+    color: #e4eee5;
+    font-size: clamp(1rem, 2vw, 1.14rem);
+}
+
+.hero-content .hero-location {
+    margin-bottom: .9rem;
+    color: #b2efc8;
+    font-weight: 720;
+}
+
+.hero .cta:focus-visible {
+    outline-color: white;
+}
+
+.home-actions {
+    position: relative;
+    z-index: 1;
+    margin-block: -1.25rem 1.75rem;
+}
+
+.home-action-panel {
+    display: grid;
+    gap: .375rem;
+    padding: .5rem;
+    border: 1px solid var(--agtech-border);
+    border-radius: .9rem;
+    background: var(--agtech-surface);
+    box-shadow: 0 .6rem 1.55rem #0a100c22;
+}
+
+.home-action {
+    display: grid;
+    gap: .3rem;
+    align-content: center;
+    min-height: 4.25rem;
+    padding: .75rem 1rem;
+    border-radius: .55rem;
+    color: var(--agtech-ink);
+    text-decoration: none;
+}
+
+.home-action strong {
+    font-family: var(--agtech-heading-font);
+    font-size: 1.02rem;
+    font-weight: 780;
+    line-height: 1.25;
+}
+
+.home-action span {
+    color: var(--agtech-muted);
+    font-size: .9rem;
+}
+
+.home-action:hover {
+    background: var(--agtech-soft);
+    color: var(--agtech-green);
+}
+
+.home-action-primary {
+    background: var(--agtech-highlight);
+}
+
+.home-action-primary:hover {
+    background: var(--agtech-highlight-hover);
+}
+
+#video-title {
+    scroll-margin-top: 6rem;
+}
+
+@media (max-width: 767px) {
+    .hero {
+        align-items: end;
+    }
+
+    .hero::after {
+        background: linear-gradient(0deg, #10261a 0%, #10261ad9 45%, #10261a33 100%);
+    }
+}
+
+.cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: .65rem 1.25rem;
+    border: 1px solid transparent;
+    border-radius: .65rem;
+    background: var(--agtech-green);
+    color: var(--agtech-button-text);
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+}
+
+.cta:hover {
+    background: var(--agtech-button-hover);
+    color: var(--agtech-button-text);
+}
+
+.cta:disabled {
+    opacity: .65;
+}
+
+.cta-outline {
+    border-color: var(--agtech-green);
+    background: transparent;
+    color: var(--agtech-green);
+}
+
+.cta-outline:hover {
+    background: var(--agtech-soft);
+    color: var(--agtech-ink);
+}
+
+.section {
+    padding-block: clamp(3rem, 7vw, 6rem);
+}
+
+.section h2 {
+    font-size: clamp(1.7rem, 3vw, 2.65rem);
+}
+
+.products {
+    background: var(--agtech-soft);
+    scroll-margin-top: 5rem;
+}
+
+.section-intro {
+    max-width: 42rem;
+    margin: 0 auto clamp(1.75rem, 4vw, 2.75rem);
+    text-align: center;
+}
+
+.section-intro h2 {
+    margin-bottom: .75rem;
+    text-wrap: balance;
+}
+
+.section-intro p {
+    margin: 0;
+    color: var(--agtech-muted);
+    font-size: 1.05rem;
+    text-wrap: balance;
+}
+
+.section-intro-wide {
+    max-width: none;
+}
+
+.section-intro-wide p {
+    text-wrap: wrap;
+}
+
+.product-cards {
+    display: grid;
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.product-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--agtech-border);
+    border-radius: 1.1rem;
+    background: var(--agtech-surface);
+}
+
+.product-photo {
+    overflow: hidden;
+    background: var(--agtech-highlight);
+}
+
+.product-photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+}
+
+.product-card-body {
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 1.85rem clamp(1rem, 2.2vw, 1.5rem) 1.25rem;
+}
+
+.product-icon {
+    position: absolute;
+    top: -1.45rem;
+    display: grid;
+    width: 2.9rem;
+    height: 2.9rem;
+    place-items: center;
+    border: 3px solid var(--agtech-surface);
+    border-radius: .85rem;
+    background: var(--agtech-highlight);
+    color: var(--agtech-green);
+}
+
+.product-card h3 {
+    margin-bottom: .5rem;
+    font-size: 1.35rem;
+    letter-spacing: -.025em;
+}
+
+.product-card p {
+    margin-bottom: 0;
+    color: var(--agtech-muted);
+}
+
+.product-card p:not(.product-tip) {
+    margin-bottom: 1rem;
+}
+
+.product-card .product-tip {
+    margin-top: auto;
+    padding-top: .75rem;
+    border-top: 1px solid var(--agtech-border);
+    color: var(--agtech-green);
+    font-size: .9rem;
+    line-height: 1.5;
+}
+
+.tutorial-intro {
+    max-width: 46rem;
+    padding-block: clamp(2rem, 4vw, 3.25rem) 1.25rem;
+    text-align: center;
+}
+
+.tutorial-intro h2 {
+    margin-bottom: .45rem;
+}
+
+.tutorial-intro p, .albay-story p, .market-path p, .market-preview p {
+    color: var(--agtech-muted);
+}
+
+.tutorial-intro p {
+    margin-bottom: 0;
+}
+
+.tutorial-section {
+    background: var(--agtech-soft);
+}
+
+.tutorial-stage {
+    --tutorial-gutter: clamp(.75rem, 2.5vw, 1.5rem);
+    display: grid;
+    grid-template-columns: minmax(var(--tutorial-gutter), 1fr) minmax(0, 52rem) minmax(var(--tutorial-gutter), 1fr);
+    grid-template-rows: repeat(2, 1fr) auto;
+}
+
+.tutorial-stage::before {
+    grid-area: 2 / 1 / 4 / -1;
+    background: var(--agtech-header);
+    content: '';
+}
+
+.tutorial-video {
+    grid-area: 1 / 2 / 3 / 3;
+    overflow: hidden;
+    border: 1px solid #ffffff35;
+    border-radius: 1.1rem;
+    background: var(--agtech-header);
+    box-shadow: 0 1rem 2.5rem #0003;
+}
+
+.tutorial-links {
+    grid-area: 3 / 2 / 4 / 3;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .5rem 1.5rem;
+    padding-block: .9rem clamp(1.25rem, 3vw, 2rem);
+}
+
+.tutorial-links a {
+    color: #d7f4df;
+    font-weight: 650;
+    text-underline-offset: .2em;
+}
+
+.tutorial-links a:focus-visible {
+    outline-color: #d7f4df;
+}
+
+.market-path,
+.market-preview li {
+    height: 100%;
+    border: 1px solid var(--agtech-border);
+    border-radius: 1rem;
+    background: var(--agtech-surface);
+}
+
+.market-path,
+.market-preview-details {
+    padding: clamp(1.25rem, 3vw, 1.85rem);
+}
+
+.market-preview li {
+    overflow: hidden;
+}
+
+.market-preview-photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 8 / 5;
+    object-fit: cover;
+    background: var(--agtech-soft);
+}
+
+.market-path svg {
+    margin-bottom: 1rem;
+    color: var(--agtech-green);
+}
+
+.market-path h3,
+.market-preview h3 {
+    font-size: 1.3rem;
+}
+
+.market-path a,
+.albay-story a {
+    font-weight: 700;
+    text-underline-offset: .2em;
+}
+
+.albay-story {
+    background: var(--agtech-soft);
+}
+
+.albay-story-grid,
+.market-preview {
+    display: grid;
+    align-items: center;
+    gap: clamp(1rem, 3vw, 2.5rem);
+}
+
+.albay-story-grid img {
+    width: 100%;
+    height: auto;
+    border-radius: 1rem;
+    aspect-ratio: 8 / 5;
+    object-fit: cover;
+}
+
+.market-preview {
+    padding: 0;
+    list-style: none;
+}
+
+.market-preview .market-preview-availability {
+    margin: 0;
+    color: var(--agtech-green);
+}
+
+.spotlight-quote {
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+    border-left: 3px solid var(--agtech-green);
+    font-family: var(--agtech-heading-font);
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+}
+
+.footer {
+    padding-block: 3rem 1.5rem;
+    border-top: 1px solid var(--agtech-border);
+    background: var(--agtech-paper);
+    color: var(--agtech-ink);
+}
+
+.footer a {
+    color: inherit;
+}
+
+.footer li + li {
+    margin-top: .35rem;
+}
+
+.page-intro {
+    max-width: 48rem;
+    margin-bottom: 2rem;
+}
+
+.page-intro p {
+    max-width: 40rem;
+    color: var(--agtech-muted);
+    font-size: clamp(1rem, 2vw, 1.2rem);
+}
+
+.page-intro.about-intro {
+    margin-inline: auto;
+    text-align: center;
+}
+
+.about-intro p {
+    margin-inline: auto;
+}
+
+.about-hero {
+    padding-bottom: 0;
+}
+
+.about-panorama {
+    display: block;
+    width: 100%;
+    height: clamp(12rem, 34vw, 27rem);
+    border-radius: 1.2rem 1.2rem 0 0;
+    object-fit: cover;
+    object-position: center 65%;
+}
+
+.about-mission {
+    background: var(--agtech-soft);
+}
+
+.mission-layout {
+    display: grid;
+    align-items: start;
+    gap: clamp(1.75rem, 5vw, 4rem);
+}
+
+.mission-layout h2 {
+    margin-bottom: 1.25rem;
+}
+
+.mission-grid {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.mission-grid li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-block: 1.1rem;
+    border-top: 1px solid var(--agtech-border);
+}
+
+.mission-grid li:last-child {
+    border-bottom: 1px solid var(--agtech-border);
+}
+
+.mission-icon {
+    display: grid;
+    flex: 0 0 2.75rem;
+    height: 2.75rem;
+    place-items: center;
+    border-radius: .7rem;
+    background: var(--agtech-highlight);
+    color: var(--agtech-green);
+}
+
+.mission-grid h3 {
+    margin-bottom: .35rem;
+    font-size: 1.22rem;
+}
+
+.mission-grid p {
+    margin-bottom: 0;
+    color: var(--agtech-muted);
+}
+
+.page-intro.team-intro {
+    margin: 0 auto clamp(1.5rem, 4vw, 2.75rem);
+    text-align: center;
+}
+
+.team-intro h1 {
+    margin-bottom: .75rem;
+}
+
+.team-intro p {
+    margin: 0 auto;
+    text-wrap: balance;
+}
+
+.team-roster {
+    display: grid;
+    align-items: start;
+    gap: clamp(.85rem, 2.5vw, 1.5rem);
+}
+
+.team-picker {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .55rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.team-picker-button {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    width: 100%;
+    height: 100%;
+    min-height: 3rem;
+    padding: .65rem;
+    border: 1px solid var(--agtech-border);
+    border-radius: .75rem;
+    background: var(--agtech-surface);
+    color: var(--agtech-ink);
+    text-align: left;
+}
+
+.team-picker-button:hover,
+.team-picker-button[aria-pressed="true"] {
+    border-color: var(--agtech-green);
+}
+
+.team-picker-button[aria-pressed="true"] {
+    background: var(--agtech-highlight);
+}
+
+.team-picker-button img {
+    flex: none;
+    border-radius: .5rem;
+    background: var(--agtech-soft);
+    object-fit: contain;
+}
+
+.team-picker-button strong,
+.team-picker-role {
+    display: block;
+    line-height: 1.25;
+}
+
+.team-picker-role {
+    margin-top: .25rem;
+    color: var(--agtech-muted);
+    font-size: .875rem;
+}
+
+.team-profile {
+    display: grid;
+    overflow: hidden;
+    border: 1px solid var(--agtech-border);
+    border-radius: 1.1rem;
+    background: var(--agtech-surface);
+}
+
+.team-profile-content {
+    display: grid;
+    align-items: center;
+}
+
+.team-portrait {
+    position: relative;
+    display: grid;
+    height: clamp(11rem, 45vw, 21rem);
+    place-items: end center;
+    background: var(--agtech-highlight);
+}
+
+.team-portrait img {
+    width: min(100%, 21rem);
+    height: 100%;
+    object-fit: contain;
+    object-position: center bottom;
+}
+
+.team-portrait-overlay {
+    position: absolute;
+    z-index: 1;
+    inset: auto 0 0;
+    padding: 1.75rem 1rem .7rem;
+    background: linear-gradient(transparent, #331318);
+    color: white;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.team-details {
+    padding: clamp(1rem, 3vw, 2rem);
+}
+
+.section .team-details h2 {
+    margin-bottom: .45rem;
+    font-size: clamp(1.45rem, 3.25vw, 2rem);
+    letter-spacing: -.025em;
+}
+
+.team-details p {
+    margin-bottom: 0;
+    color: var(--agtech-muted);
+}
+
+.team-details .team-role {
+    margin-bottom: .55rem;
+    color: var(--agtech-green);
+    font-weight: 700;
+}
+
+@media (max-width: 575px) {
+    .team-picker-button img {
+        display: none;
+    }
+}
+
+@media (min-width: 768px) {
+    .mission-layout {
+        grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+    }
+
+    .team-roster {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.75fr);
+        align-items: stretch;
+    }
+
+    .team-picker {
+        grid-template-columns: 1fr;
+        grid-auto-rows: 1fr;
+    }
+
+    .team-profile-content {
+        grid-template-rows: minmax(8rem, 1fr) auto;
+    }
+
+    .team-portrait {
+        height: auto;
+        align-self: stretch;
+    }
+
+    .team-portrait img {
+        position: absolute;
+        inset: 0;
+        margin-inline: auto;
+    }
+}
+
+@media (min-width: 992px) {
+    .team-profile-content {
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+        grid-template-rows: 1fr;
+    }
+}
+
+.support-page {
+    background: var(--agtech-soft);
+}
+
+.support-layout {
+    display: grid;
+    align-items: start;
+    gap: clamp(1.5rem, 5vw, 4rem);
+}
+
+.support-intro h1 {
+    font-size: clamp(2.25rem, 4.4vw, 3.65rem);
+    text-wrap: balance;
+}
+
+.support-intro p {
+    margin-bottom: 0;
+}
+
+.support-card {
+    display: flex;
+    align-items: flex-start;
+    gap: .85rem;
+    margin-top: .85rem;
+    padding: 1rem;
+    border: 1px solid var(--agtech-border);
+    border-radius: .8rem;
+    background: var(--agtech-surface);
+}
+
+.support-card svg {
+    flex: none;
+    color: var(--agtech-green);
+}
+
+.section .support-card h2 {
+    margin-bottom: .25rem;
+    font-size: 1.05rem;
+    letter-spacing: -.015em;
+}
+
+.support-card a {
+    overflow-wrap: anywhere;
+    text-underline-offset: .2em;
+}
+
+.faq-content, .form-panel {
+    padding: clamp(1.15rem, 3vw, 2rem);
+    border: 1px solid var(--agtech-border);
+    border-radius: 1.25rem;
+    background: var(--agtech-surface);
+}
+
+.faq-content .form-label,
+.form-panel .form-label {
+    font-weight: 670;
+}
+
+.faq-search {
+    position: relative;
+    margin-bottom: .85rem;
+}
+
+.faq-search svg {
+    position: absolute;
+    top: 50%;
+    left: .85rem;
+    color: var(--agtech-green);
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.faq-search .form-control {
+    padding-inline-start: 2.65rem;
+}
+
+.faq-results {
+    margin-bottom: .75rem;
+    color: var(--agtech-muted);
+}
+
+.faq-list details + details {
+    border-top: 1px solid var(--agtech-border);
+}
+
+.faq-list summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 3.25rem;
+    padding-block: .75rem;
+    border-radius: .3rem;
+    cursor: pointer;
+    font-weight: 700;
+    list-style: none;
+}
+
+.faq-list summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-list summary::after {
+    flex: 0 0 .55rem;
+    width: .55rem;
+    height: .55rem;
+    margin-inline: .3rem;
+    border: solid var(--agtech-green);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    content: '';
+}
+
+.faq-list details[open] summary::after {
+    transform: rotate(225deg);
+}
+
+.faq-list summary:hover,
+.faq-list details[open] summary {
+    color: var(--agtech-green);
+}
+
+.faq-list p {
+    margin: 0 1.5rem 1rem 0;
+    color: var(--agtech-muted);
+}
+
+.faq-search .form-control,
+.form-panel .form-control {
+    min-height: 2.85rem;
+    border-color: var(--agtech-control-border);
+}
+
+.faq-search .form-control:focus,
+.form-panel .form-control:focus {
+    border-color: var(--agtech-green);
+    box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--agtech-green) 21%, transparent);
+}
+
+.contact-panel h2 {
+    margin-bottom: 1.25rem;
+}
+
+.contact-fields {
+    display: grid;
+    gap: .85rem;
+    margin-bottom: 1rem;
+}
+
+.field-error {
+    margin: .35rem 0 0;
+    color: var(--agtech-field-error);
+    font-size: .9rem;
+}
+
+@media (min-width: 768px) {
+    .home-actions {
+        margin-top: -2rem;
+    }
+
+    .home-action-panel {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .home-action {
+        padding: 1rem 1.2rem;
+    }
+
+    .product-cards {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: clamp(1rem, 2.5vw, 1.75rem);
+    }
+
+    .albay-story-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .market-preview {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .support-layout {
+        grid-template-columns: minmax(0, .85fr) minmax(0, 1.35fr);
+    }
+}
+
+@media (min-width: 992px) {
+    .contact-fields {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.login-page {
+    display: grid;
+    align-items: center;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding-block: clamp(1.5rem, 5vw, 4rem);
+    background: var(--agtech-soft);
+}
+
+.login-shell {
+    max-width: 70rem;
+}
+
+.login-content {
+    max-width: 32rem;
+    margin-inline: auto;
+    padding: clamp(1.2rem, 3.5vw, 2.5rem);
+    border: 1px solid var(--agtech-border);
+    border-radius: 1.25rem;
+    background: var(--agtech-surface);
+}
+
+.login-brand {
+    margin-bottom: 1.35rem;
+}
+
+.login-form-panel {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+}
+
+.login-form-panel h1 {
+    margin-bottom: .55rem;
+    font-size: clamp(1.85rem, 4.25vw, 2.65rem);
+}
+
+.login-intro {
+    margin-bottom: 1.35rem;
+    color: var(--agtech-muted);
+}
+
+.password-label {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    column-gap: .75rem;
+}
+
+.password-label a {
+    margin-bottom: .5rem;
+    font-size: .9rem;
+    text-underline-offset: .2em;
+}
+
+.password-toggle {
+    display: grid;
+    min-width: 2.85rem;
+    place-items: center;
+    border-color: var(--agtech-control-border);
+    color: var(--agtech-green);
+}
+
+.password-toggle:hover {
+    border-color: var(--agtech-control-border);
+    background: var(--agtech-highlight);
+    color: var(--agtech-green);
+}
+
+.login-registration {
+    margin: 1rem 0 0;
+    color: var(--agtech-muted);
+    text-align: center;
+}
+
+.login-visual {
+    display: none;
+}
+
+@media (min-width: 992px) {
+    .login-shell {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    }
+
+    .login-content {
+        display: grid;
+        align-content: center;
+        max-width: none;
+        margin: 0;
+        padding: clamp(2rem, 4vw, 3.5rem);
+        border-inline-start: 0;
+        border-radius: 0 1.25rem 1.25rem 0;
+    }
+
+    .login-visual {
+        display: block;
+        min-height: 34rem;
+        border-radius: 1.25rem 0 0 1.25rem;
+        background: var(--agtech-header) url('../../../images/AgTech-Farm-Hero.webp') 75% center / cover no-repeat;
+    }
+}
+
+.register-page {
+    min-height: 100svh;
+    padding-block: clamp(1.5rem, 5vw, 4rem);
+    background: var(--agtech-soft);
+}
+
+.register-shell {
+    max-width: 48rem;
+}
+
+.register-intro {
+    margin-bottom: clamp(1.25rem, 4vw, 2rem);
+    text-align: center;
+}
+
+.register-intro .brand {
+    margin-bottom: 1rem;
+}
+
+.register-intro h1 {
+    margin-bottom: .7rem;
+    font-size: clamp(2.15rem, 4.6vw, 3.35rem);
+    text-wrap: balance;
+}
+
+.register-intro p {
+    max-width: 32rem;
+    margin: .4rem auto 0;
+    color: var(--agtech-muted);
+}
+
+.register-progress {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .5rem;
+    margin: 0 0 1.5rem;
+    padding: 0 0 1rem;
+    border-bottom: 1px solid var(--agtech-border);
+    list-style: none;
+}
+
+.register-progress li {
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: .5rem;
+    color: var(--agtech-muted);
+    font-size: .875rem;
+    text-align: center;
+}
+
+.register-progress [aria-current="step"],
+.register-progress [data-complete] {
+    color: var(--agtech-green);
+    font-weight: 700;
+}
+
+.register-step-number {
+    display: grid;
+    width: 1.85rem;
+    height: 1.85rem;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--agtech-soft);
+}
+
+.register-progress [aria-current="step"] .register-step-number {
+    background: var(--agtech-green);
+    color: var(--agtech-button-text);
+}
+
+.register-progress [data-complete] .register-step-number {
+    background: var(--agtech-highlight);
+}
+
+.register-form fieldset {
+    min-width: 0;
+    margin-bottom: 1.5rem;
+}
+
+.register-form legend {
+    margin-bottom: .85rem;
+    font-family: var(--agtech-heading-font);
+    font-size: 1.2rem;
+    font-weight: 750;
+}
+
+.register-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: .75rem;
+}
+
+.register-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: .85rem 1rem;
+    clear: both;
+}
+
+.register-form .form-select {
+    min-height: 2.85rem;
+    border-color: var(--agtech-control-border);
+}
+
+.register-form .form-select:focus {
+    border-color: var(--agtech-green);
+    box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--agtech-green) 21%, transparent);
+}
+
+.register-consent {
+    margin-top: 1.15rem;
+}
+
+.register-consent .form-check-input:checked {
+    border-color: var(--agtech-green);
+    background-color: var(--agtech-green);
+}
+
+@media (min-width: 576px) {
+    .register-fields {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+:where(a, button, summary):focus-visible {
+    outline: 2px solid var(--agtech-green);
+    outline-offset: 3px;
+}
+
+@keyframes settle-in {
+    from {
+        opacity: 0;
+        transform: translateY(.5rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scroll-reveal {
+    from {
+        opacity: .35;
+        transform: translateY(.75rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    [data-scroll-reveal][data-revealed] {
+        animation: scroll-reveal 420ms ease-out both;
+    }
+
+    .hero-content, .page-intro, .login-shell, .support-layout .form-panel, .team-profile-content, .register-form {
+        animation: settle-in 340ms ease-out both;
+    }
+
+    .support-layout .form-panel {
+        animation-delay: 75ms;
+    }
+
+    .home-action {
+        transition: background-color 160ms ease, color 160ms ease;
+    }
+
+    .cta {
+        transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
+    }
+
+    .cta:active:not(:disabled) {
+        transform: translateY(1px);
+    }
+
+    .faq-list details[open] p {
+        animation: settle-in 180ms ease-out both;
+    }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .product-photo img {
+        transition: transform 260ms ease;
+    }
+
+    .product-card:hover .product-photo img {
+        transform: scale(1.04);
+    }
+
+}

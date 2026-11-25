@@ -1,18 +1,53 @@
 <?php
 // Database connection parameters
-require_once '../Connection/connection.php';
+require_once __DIR__.'/../Connection/connection.php';
 
 // Start session
 session_start();
 
-// Retrieve form data
-$email_or_phone = isset($_POST['email_or_phone']) ? $conn->real_escape_string($_POST['email_or_phone']) : '';
-$password = isset($_POST['password']) ? $_POST['password'] : '';
+function modernLoginUrl(): ?string
+{
+    if (($_POST['agtech_modern_login'] ?? null) !== '1') {
+        return null;
+    }
 
-function getUserData($conn, $email_or_phone) {
-    $sql = "SELECT user_id, password, user_type FROM user WHERE email='$email_or_phone' OR phone_number='$email_or_phone'";
-    $result = $conn->query($sql);
-    return $result->num_rows == 1 ? $result->fetch_assoc() : null;
+    $base = rtrim(getenv('AGTECH_MODERN_APP_URL') ?: 'http://localhost:8000', '/');
+    $parts = parse_url($base);
+    if (!isset($parts['scheme'], $parts['host']) || !in_array($parts['scheme'], ['http', 'https'], true)) {
+        http_response_code(403);
+        exit;
+    }
+
+    $origin = $parts['scheme'].'://'.$parts['host'].(isset($parts['port']) ? ':'.$parts['port'] : '');
+    if (($_SERVER['HTTP_ORIGIN'] ?? '') !== $origin) {
+        http_response_code(403);
+        exit;
+    }
+
+    return $base.'/login';
+}
+
+function loginFailure(?string $modernLoginUrl, string $status, string $message): void
+{
+    if ($modernLoginUrl !== null) {
+        header('Location: '.$modernLoginUrl.'?status='.$status, true, 303);
+    } else {
+        $_SESSION['error'] = $message;
+        header('Location: Login.php', true, 303);
+    }
+    exit;
+}
+
+function getUserData($conn, string $emailOrPhone): ?array
+{
+    $statement = $conn->prepare('SELECT user_id, password, user_type FROM user WHERE email = ? OR phone_number = ? LIMIT 2');
+    $statement->bind_param('ss', $emailOrPhone, $emailOrPhone);
+    $statement->execute();
+    $result = $statement->get_result();
+    $user = $result->num_rows === 1 ? $result->fetch_assoc() : null;
+    $statement->close();
+
+    return $user;
 }
 
 function handleLoginAttempt($conn, $user_id) {
@@ -38,70 +73,62 @@ function logAdminActivity($conn, $admin_id, $activity) {
     $conn->query($sql);
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $modernLoginUrl = modernLoginUrl();
+    $identifier = is_string($_POST['email_or_phone'] ?? null) ? trim($_POST['email_or_phone']) : '';
+    $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
+    $invalidMessage = 'Email or Phone and Password is invalid.';
+    $_SESSION['email_or_phone'] = $identifier;
 
-    // Get user data based on email_or_phone
-    $user_data = getUserData($conn, $email_or_phone);
-
-    if ($user_data !== null) {
-        $_SESSION['user_id'] = $user_data['user_id']; // Store user_id in session
-        $_SESSION['email_or_phone'] = $email_or_phone;
-
-        // Check if user is locked
-        $verification_query = "SELECT is_locked, login_attempts, lock_time FROM userverification WHERE user_id='{$user_data['user_id']}'";
-        $verification_result = $conn->query($verification_query);
-        $verification_data = $verification_result->fetch_assoc();
-
-        if ($verification_data['is_locked'] == 1) {
-            $lock_time = isset($verification_data['lock_time']) ? strtotime($verification_data['lock_time']) : 0;
-            $current_time = time();
-            $time_locked = $current_time - $lock_time; // in seconds
-            
-            if ($time_locked < 15) {
-                $remaining_time = 15 - $time_locked;
-                $_SESSION['error'] = "Account is locked. Please wait {$remaining_time} seconds.";
-                $_SESSION['remaining_time'] = $remaining_time;
-
-                header("Location: Login.php");
-                exit();
-            } else {
-                // Reset the login attempts and lock status
-                $reset_attempts_sql = "UPDATE userverification SET login_attempts=0, is_locked=0, lock_time=NULL WHERE user_id='{$user_data['user_id']}'";
-                $conn->query($reset_attempts_sql);
-
-                $_SESSION['success'] = "You can now attempt logging in again.";
-                $_SESSION['remaining_time'] = 0;
-                header("Location: Login.php");
-                exit();
-            }
-        }
-
-        if (password_verify($password, $user_data['password'])) {
-            // Reset login attempts
-            $reset_sql = "UPDATE userverification SET login_attempts=0 WHERE user_id='{$user_data['user_id']}'";
-            $conn->query($reset_sql);
-
-            // Redirect based on user type
-            if ($user_data['user_type'] == 'Farmer-Trader') {
-                header("Location: ../Farmer-Trader/Market.php");
-            } elseif ($user_data['user_type'] == 'Admin') {
-                // Log admin activity
-                logAdminActivity($conn, $user_data['user_id'], "Admin logged in");
-                
-                header("Location: ../Admin/Dashboard.php");
-            }
-            exit();
-        } else {
-            handleLoginAttempt($conn, $user_data['user_id']);
-            $_SESSION['error'] = "Email or Phone and Password is invalid.";
-            header("Location: Login.php");
-            exit();
-        }
-    } else {
-        $_SESSION['error'] = "Email or Phone and Password is invalid.";
-        header("Location: Login.php");
-        exit();
+    $user = $identifier !== '' && $password !== '' ? getUserData($conn, $identifier) : null;
+    if ($user === null) {
+        loginFailure($modernLoginUrl, 'invalid', $invalidMessage);
     }
+
+    $userId = (int) $user['user_id'];
+    $verification = $conn->query("SELECT is_locked, lock_time FROM userverification WHERE user_id=$userId")->fetch_assoc();
+
+    if (!empty($verification['is_locked'])) {
+        $lockTime = isset($verification['lock_time']) ? strtotime($verification['lock_time']) : 0;
+        $remainingTime = 15 - (time() - $lockTime);
+
+        if ($remainingTime > 0) {
+            if ($modernLoginUrl === null) {
+                $_SESSION['remaining_time'] = $remainingTime;
+            }
+
+            loginFailure($modernLoginUrl, 'locked', "Account is locked. Please wait {$remainingTime} seconds.");
+        }
+
+        $conn->query("UPDATE userverification SET login_attempts=0, is_locked=0, lock_time=NULL WHERE user_id=$userId");
+        unset($_SESSION['remaining_time']);
+    }
+
+    if (!password_verify($password, $user['password'])) {
+        handleLoginAttempt($conn, $userId);
+        loginFailure($modernLoginUrl, 'invalid', $invalidMessage);
+    }
+
+    $destination = match ($user['user_type']) {
+        'Farmer-Trader' => '../Farmer-Trader/Market.php',
+        'Admin' => '../Admin/Dashboard.php',
+        default => null,
+    };
+
+    if ($destination === null) {
+        loginFailure($modernLoginUrl, 'invalid', $invalidMessage);
+    }
+
+    $conn->query("UPDATE userverification SET login_attempts=0 WHERE user_id=$userId");
+    if ($user['user_type'] === 'Admin') {
+        logAdminActivity($conn, $userId, 'Admin logged in');
+    }
+
+    session_regenerate_id(true);
+    $_SESSION['user_id'] = $userId;
+    unset($_SESSION['error'], $_SESSION['remaining_time']);
+    header('Location: '.$destination, true, 303);
+    exit;
 }
 ?>
 

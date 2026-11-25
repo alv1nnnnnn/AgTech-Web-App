@@ -1,9 +1,6 @@
 <?php
 session_start();
 
-require_once '../Connection/connection.php';
-require '../vendor/autoload.php'; // Composer autoloader for PHPMailer
-
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -11,16 +8,91 @@ function sanitize_data($data) {
     return htmlspecialchars(stripslashes(trim($data)));
 }
 
+function modernRegistrationUrl(): ?string
+{
+    if (($_POST['agtech_modern_register'] ?? null) !== '1') {
+        return null;
+    }
+
+    $base = rtrim(getenv('AGTECH_MODERN_APP_URL') ?: 'http://localhost:8000', '/');
+    $parts = parse_url($base);
+    if (!isset($parts['scheme'], $parts['host']) || !in_array($parts['scheme'], ['http', 'https'], true)) {
+        http_response_code(403);
+        exit;
+    }
+
+    $origin = $parts['scheme'].'://'.$parts['host'].(isset($parts['port']) ? ':'.$parts['port'] : '');
+    if (($_SERVER['HTTP_ORIGIN'] ?? '') !== $origin) {
+        http_response_code(403);
+        exit;
+    }
+
+    return $base.'/register';
+}
+
+function redirectRegistration(string $url, string $status): void
+{
+    header('Location: '.$url.'?status='.$status, true, 303);
+    exit;
+}
+
+function validModernRegistration(): bool
+{
+    $required = [
+        'first-name' => 100, 'last-name' => 100, 'birthdate' => 10, 'phone' => 11,
+        'email' => 254, 'province-name' => 150, 'municipality-name' => 150,
+        'barangay-name' => 150, 'postal-code' => 4,
+    ];
+
+    foreach ($required as $field => $limit) {
+        $value = $_POST[$field] ?? null;
+        if (!is_string($value) || trim($value) === '' || strlen(trim($value)) > $limit) {
+            return false;
+        }
+    }
+
+    if (!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/D', $_POST['birthdate'])) {
+        return false;
+    }
+
+    $birthdate = DateTimeImmutable::createFromFormat('!Y-m-d', $_POST['birthdate']);
+    $password = $_POST['password'] ?? null;
+
+    return $birthdate !== false
+        && $birthdate->format('Y-m-d') === $_POST['birthdate']
+        && $birthdate < new DateTimeImmutable('today')
+        && preg_match('/^[0-9]{11}$/D', $_POST['phone']) === 1
+        && preg_match('/^[0-9]{4}$/D', $_POST['postal-code']) === 1
+        && filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL) !== false
+        && is_string($password)
+        && strlen($password) >= 8 && strlen($password) <= 72
+        && !str_contains($password, "\0")
+        && $password === ($_POST['confirm-password'] ?? null)
+        && ($_POST['accept-terms'] ?? null) === '1';
+}
+
+$modernRegistrationUrl = modernRegistrationUrl();
+if ($modernRegistrationUrl !== null && !validModernRegistration()) {
+    redirectRegistration($modernRegistrationUrl, 'invalid');
+}
+
+require_once __DIR__.'/../Connection/connection.php';
+require __DIR__.'/../vendor/autoload.php';
+
 $message = "";
 $old_values = $_POST ?? []; // Initialize old_values with form data or an empty array
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $first_name = sanitize_data($_POST['first-name']);
     $last_name = sanitize_data($_POST['last-name']);
-    $password = sanitize_data($_POST['password']);
+    $password = $modernRegistrationUrl !== null ? $_POST['password'] : sanitize_data($_POST['password']);
     $phone = sanitize_data($_POST['phone']);
-    $email = isset($_POST['email']) ? sanitize_data($_POST['email']) : '';
-    $user_type = isset($_POST['user-type']) ? sanitize_data($_POST['user-type']) : 'Farmer-Trader';
+    $email = $modernRegistrationUrl !== null
+        ? trim($_POST['email'])
+        : (isset($_POST['email']) ? sanitize_data($_POST['email']) : '');
+    $user_type = $modernRegistrationUrl === null && isset($_POST['user-type'])
+        ? sanitize_data($_POST['user-type'])
+        : 'Farmer-Trader';
     $birthdate = sanitize_data($_POST['birthdate']);
     $province = sanitize_data($_POST['province-name']);
     $municipality = sanitize_data($_POST['municipality-name']);
@@ -28,13 +100,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $postal_code = sanitize_data($_POST['postal-code']);
 
     // Check if the email already exists in the database
-    $check_email_query = "SELECT * FROM user WHERE email = ?";
-    $stmt = $conn->prepare($check_email_query);
-    $stmt->bind_param("s", $email);
+    $stmt = $conn->prepare($modernRegistrationUrl !== null
+        ? 'SELECT 1 FROM user WHERE email = ? OR phone_number = ? LIMIT 1'
+        : 'SELECT 1 FROM user WHERE email = ? LIMIT 1');
+    if ($modernRegistrationUrl !== null) {
+        $stmt->bind_param('ss', $email, $phone);
+    } else {
+        $stmt->bind_param('s', $email);
+    }
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
+        if ($modernRegistrationUrl !== null) {
+            redirectRegistration($modernRegistrationUrl, 'account-exists');
+        }
+
         // If email exists, show Swal alert
         $message = "Email already exists. Please use a different email address.";
     } else {
@@ -47,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $file_paths = [];
 
-        if (isset($_FILES['idFrontUpload']) && $_FILES['idFrontUpload']['error'] == UPLOAD_ERR_OK) {
+        if ($modernRegistrationUrl === null && isset($_FILES['idFrontUpload']) && $_FILES['idFrontUpload']['error'] == UPLOAD_ERR_OK) {
             $idFrontTmpName = $_FILES['idFrontUpload']['tmp_name'];
             $idFrontName = basename($_FILES['idFrontUpload']['name']);
             $idFrontPath = '../images/' . $idFrontName;
@@ -55,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $file_paths['front'] = $idFrontPath;
         }
 
-        if (isset($_FILES['idBackUpload']) && $_FILES['idBackUpload']['error'] == UPLOAD_ERR_OK) {
+        if ($modernRegistrationUrl === null && isset($_FILES['idBackUpload']) && $_FILES['idBackUpload']['error'] == UPLOAD_ERR_OK) {
             $idBackTmpName = $_FILES['idBackUpload']['tmp_name'];
             $idBackName = basename($_FILES['idBackUpload']['name']);
             $idBackPath = '../images/' . $idBackName;
@@ -64,6 +145,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         $valid_id_json = json_encode($file_paths);
+
+        if ($modernRegistrationUrl !== null) {
+            session_regenerate_id(true);
+        }
 
         $_SESSION['registration_data'] = [
             'first_name' => $first_name,
@@ -81,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'postal_code' => $postal_code
         ];
 
-        $otp_code = rand(100000, 999999);
+        $otp_code = random_int(100000, 999999);
         $_SESSION['otp_code'] = $otp_code;
         $_SESSION['otp_email'] = $email;
 
@@ -109,6 +194,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             header("Location: Otp_email.php");
             exit();
         } catch (Exception $e) {
+            if ($modernRegistrationUrl !== null) {
+                unset($_SESSION['registration_data'], $_SESSION['otp_code'], $_SESSION['otp_email']);
+                redirectRegistration($modernRegistrationUrl, 'mail-error');
+            }
+
             $message = "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
         }
     }
